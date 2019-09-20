@@ -10,9 +10,18 @@ class ExampleApp1Test extends TestCase
 {
     public function test()
     {
-        $app = new ExampleApp1(new ExampleConverter(), new ExampleFormatter());
+        $converter = $this->prophesize(ExampleConverter::class);
+        $formatter = $this->prophesize(ExampleFormatter::class);
 
-        $this->assertEquals('1,000', $app->do('1000'));
+        $input = 'input';
+        $converted = 1;
+        $output = 'output';
+
+        $converter->convert($input)->willReturn($converted)->shouldBeCalled();
+        $formatter->format($converted)->willReturn($output)->shouldBeCalled();
+
+        $app = new ExampleApp1($converter->reveal(), $formatter->reveal());
+        $this->assertEquals($output, $app->do($input));
     }
 
 }
