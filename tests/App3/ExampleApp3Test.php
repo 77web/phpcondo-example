@@ -10,8 +10,14 @@ class ExampleApp3Test extends TestCase
 {
     public function test()
     {
-        $app = new ExampleApp3(new BaseApp());
+        $input = 2;
+        $delegateOutput = 1;
 
-        $this->assertEquals(12, $app->do(2));
+        $delegateP = $this->prophesize(BaseApp::class);
+        $delegateP->do($input)->willReturn($delegateOutput)->shouldBeCalled();
+
+        $app = new ExampleApp3($delegateP->reveal());
+
+        $this->assertEquals(3, $app->do($input));
     }
 }
