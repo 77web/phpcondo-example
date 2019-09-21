@@ -2,52 +2,30 @@
 
 namespace Nanaweb\Example\App2;
 
-use Nanaweb\Example\App2\Output1Provider\ProviderForA;
-use Nanaweb\Example\App2\Output1Provider\ProviderForNotA;
-use Nanaweb\Example\App2\Output2Provider\ProviderForNotZ;
-use Nanaweb\Example\App2\Output2Provider\ProviderForZ;
+use Nanaweb\Example\App2\Output1Provider\Output1ProviderInterface;
+use Nanaweb\Example\App2\Output2Provider\Output2ProviderInterface;
 use PHPUnit\Framework\TestCase;
 
 class ExampleApp2Test extends TestCase
 {
-    public function test_AZ()
+    public function test()
     {
-        $app = $this->getSUT();
-        $this->assertEquals(2, $app->do('A', 'Z'));
-    }
+        $resolver1P = $this->prophesize(Output1ProviderResolver::class);
+        $provider1P = $this->prophesize(Output1ProviderInterface::class);
+        $resolver2P = $this->prophesize(Output2ProviderResolver::class);
+        $provider2P = $this->prophesize(Output2ProviderInterface::class);
 
-    public function test_AX()
-    {
-        $app = $this->getSUT();
-        $this->assertEquals(1, $app->do('A', 'X'));
-    }
+        $input1 = 'dummy';
+        $input2 = 'dummy2';
+        $output1 = 3;
+        $output2 = 2;
 
-    public function test_BZ()
-    {
-        $app = $this->getSUT();
-        $this->assertEquals(4, $app->do('B', 'Z'));
-    }
+        $provider1P->provide()->willReturn($output1)->shouldBeCalled();
+        $provider2P->provide()->willReturn($output2)->shouldBeCalled();
+        $resolver1P->resolve($input1)->willReturn($provider1P->reveal())->shouldBeCalled();
+        $resolver2P->resolve($input2)->willReturn($provider2P->reveal())->shouldBeCalled();
 
-    public function test_BX()
-    {
-        $app = $this->getSUT();
-        $this->assertEquals(2, $app->do('B', 'X'));
-    }
-
-    private function getSUT()
-    {
-        $resolver1 = new Output1ProviderResolver();
-        $resolver1
-            ->addOutput1Provider(new ProviderForA())
-            ->addOutput1Provider(new ProviderForNotA())
-        ;
-
-        $resolver2 = new Output2ProviderResolver();
-        $resolver2
-            ->addOutput2Provider(new ProviderForZ())
-            ->addOutput2Provider(new ProviderForNotZ())
-        ;
-
-        return new ExampleApp2($resolver1, $resolver2);
+        $app = new ExampleApp2($resolver1P->reveal(), $resolver2P->reveal());
+        $this->assertEquald($output1 * $output2, $app->do($input1, $output1));
     }
 }
