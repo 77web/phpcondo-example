@@ -1,9 +1,11 @@
 <?php
 
-
 namespace Nanaweb\Example\App2;
 
-
+use Nanaweb\Example\App2\Output1Provider\ProviderForA;
+use Nanaweb\Example\App2\Output1Provider\ProviderForNotA;
+use Nanaweb\Example\App2\Output2Provider\ProviderForNotZ;
+use Nanaweb\Example\App2\Output2Provider\ProviderForZ;
 use PHPUnit\Framework\TestCase;
 
 class ExampleApp2Test extends TestCase
@@ -34,6 +36,18 @@ class ExampleApp2Test extends TestCase
 
     private function getSUT()
     {
-        return new ExampleApp2();
+        $resolver1 = new Output1ProviderResolver();
+        $resolver1
+            ->addOutput1Provider(new ProviderForA())
+            ->addOutput1Provider(new ProviderForNotA())
+        ;
+
+        $resolver2 = new Output2ProviderResolver();
+        $resolver2
+            ->addOutput2Provider(new ProviderForZ())
+            ->addOutput2Provider(new ProviderForNotZ())
+        ;
+
+        return new ExampleApp2($resolver1, $resolver2);
     }
 }
