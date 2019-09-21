@@ -10,7 +10,7 @@ class ExampleApp3Test extends TestCase
 {
     public function test()
     {
-        $app = new ExampleApp3();
+        $app = new ExampleApp3(new BaseApp());
 
         $this->assertEquals(12, $app->do(2));
     }
