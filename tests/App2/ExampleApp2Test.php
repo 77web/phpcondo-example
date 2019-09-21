@@ -26,6 +26,6 @@ class ExampleApp2Test extends TestCase
         $resolver2P->resolve($input2)->willReturn($provider2P->reveal())->shouldBeCalled();
 
         $app = new ExampleApp2($resolver1P->reveal(), $resolver2P->reveal());
-        $this->assertEquald($output1 * $output2, $app->do($input1, $output1));
+        $this->assertEquals($output1 * $output2, $app->do($input1, $input2));
     }
 }
